@@ -1,0 +1,36 @@
+project-name/
+├── contracts/
+│   ├── VendorContract.json
+│   ├── TenderContract.json
+│   ├── PaymentContract.json
+├── backend/
+│   ├── src/
+│   │   ├── controllers/
+│   │   │   ├── vendorController.js
+│   │   │   ├── tenderController.js
+│   │   │   ├── paymentController.js
+│   │   ├── services/
+│   │   │   ├── web3Service.js
+│   │   │   ├── vendorService.js
+│   │   │   ├── tenderService.js
+│   │   │   ├── paymentService.js
+│   │   │   ├── ipfsService.js      # Handles IPFS interactions
+│   │   │   ├── cloudinaryService.js # Handles Cloudinary interactions
+│   │   ├── models/
+│   │   │   ├── vendor.js          # MongoDB Vendor model
+│   │   │   ├── tender.js          # MongoDB Tender model
+│   │   │   ├── payment.js         # MongoDB Payment model (if needed)
+│   │   ├── routes/
+│   │   │   ├── vendorRoutes.js
+│   │   │   ├── tenderRoutes.js
+│   │   │   ├── paymentRoutes.js
+│   │   ├── middleware/
+│   │   │   ├── authMiddleware.js
+│   │   ├── app.js
+│   │   ├── config.js
+│   │   ├── db.js                # MongoDB connection setup
+│   ├── package.json
+│   ├── package-lock.json
+├── .env
+├── .gitignore
+├── README.md
