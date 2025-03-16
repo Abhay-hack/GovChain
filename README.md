@@ -87,10 +87,13 @@ npm install
 npm start
 
 ```
-### Project Structure
 
+## 📂 Project Structure
+
+```plaintext
 govchain/
-├── backend/ (Node.js + Socket.io + MongoDB + Cloudinary + Pinata)
-├── contracts/ (Solidity smart contracts)
-├── frontend/ (React.js frontend - Vercel hosted)
-├── README.md
+├── backend/      # Node.js + Socket.io + MongoDB + Cloudinary + Pinata
+├── contracts/    # Solidity smart contracts
+├── frontend/     # React.js frontend (Hosted on Vercel)
+├── README.md     # Project documentation
+
