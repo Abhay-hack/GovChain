@@ -13,15 +13,15 @@ let paymentContract;
 
 async function initializeWeb3() {
     try {
-      console.log('Initializing Web3...');
+      // console.log('Initializing Web3...');
       web3 = new Web3(config.network.rpcUrl);
-      console.log('Web3 initialized:', web3);
+      // console.log('Web3 initialized:', web3);
   
       let networkId = await web3.eth.net.getId();
       networkId = networkId.toString().trim();
   
-      console.log('Connected network ID:', networkId);
-      console.log('Expected network ID:', config.network.networkId);
+      // console.log('Connected network ID:', networkId);
+      // console.log('Expected network ID:', config.network.networkId);
   
       if (JSON.stringify(networkId) !== JSON.stringify(config.network.networkId.toString())) {
         throw new Error(
@@ -43,9 +43,9 @@ async function initializeWeb3() {
         config.contractAddresses.paymentContract
       );
   
-      console.log('Vendor Contract initialized:', vendorContract);
-      console.log('Tender Contract initialized:', tenderContract);
-      console.log('Payment Contract initialized:', paymentContract);
+      // console.log('Vendor Contract initialized:', vendorContract);
+      // console.log('Tender Contract initialized:', tenderContract);
+      // console.log('Payment Contract initialized:', paymentContract);
   
       console.log('Web3 and contracts initialized successfully.');
     } catch (error) {

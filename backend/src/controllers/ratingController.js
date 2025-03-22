@@ -85,6 +85,20 @@ async function calculateAverageRatingForVendor(req, res) {
   }
 }
 
+const getVendorRatingForTender = async (req, res) => {
+  try {
+    const { tenderId, vendorAddr } = req.params;
+    const rating = await ratingService.getVendorRatingForTender(tenderId, vendorAddr);
+    if (!rating) {
+      return res.status(404).json({ error: 'Rating not found' });
+    }
+    res.json(rating);
+  } catch (error) {
+    console.error('Get vendor rating error:', error);
+    res.status(500).json({ error: 'Failed to fetch rating' });
+  }
+};
+
 module.exports = {
   createRating,
   getRatingsForTender,
@@ -92,4 +106,5 @@ module.exports = {
   updateRating,
   deleteRating,
   calculateAverageRatingForVendor,
+  getVendorRatingForTender,
 };

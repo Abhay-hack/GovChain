@@ -1,4 +1,4 @@
-/* src/styles/tailwind.css */
+/* src/index.css or src/styles/tailwind.css */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

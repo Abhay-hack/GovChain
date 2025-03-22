@@ -1,6 +1,5 @@
+// backend/src/controllers/authController.js
 const authService = require('../services/authService');
-const Vendor = require('../models/vendor');
-const Employee = require('../models/employee');
 const Joi = require('joi');
 
 const signupSchema = Joi.object({
@@ -28,33 +27,28 @@ async function signup(req, res) {
     await authService.validateEmail(email);
     await authService.validatePassword(password);
 
-    // Hash the password
     const hashedPassword = await authService.hashPassword(password);
 
+    let userData = { email, password: hashedPassword, name };
     if (role === 'vendor') {
-      const newVendor = new Vendor({
-        email: email,
-        vendorAddr: address,
-        name: name,
-        password: hashedPassword,
-      });
-      await newVendor.save();
-      res.status(201).json({ message: 'Vendor signup successful', address: address });
+      userData.vendorAddr = address;
     } else if (role === 'employee') {
-      const newEmployee = new Employee({
-        email: email,
-        address: address,
-        name: name,
-        password: hashedPassword,
-        employeeId: "EMP" + Math.floor(Math.random() * 1000), //generate random employee id.
-      });
-      await newEmployee.save();
-      res.status(201).json({ message: 'Employee signup successful', address: address });
-    } else {
-      res.status(400).json({message: "Invalid role"});
+      userData.address = address;
+      userData.employeeId = "EMP" + Math.floor(Math.random() * 1000);
     }
+
+    const existingUser = await authService.findUserByEmail(email);
+    if (existingUser) {
+      return res.status(400).json({ error: 'Email already registered' });
+    }
+
+    const user = await authService.createUser({ ...userData, role });
+    res.status(201).json({ message: `${role} signup successful`, address: user.address || user.vendorAddr });
   } catch (error) {
     console.error('Signup error:', error);
+    if (error.code === 11000) {
+      return res.status(400).json({ error: 'Address already registered' });
+    }
     res.status(500).json({ error: error.message });
   }
 }
@@ -68,18 +62,12 @@ async function login(req, res) {
 
     const { email, password } = value;
 
-    let user, role;
-    user = await Vendor.findOne({email: email});
-    role = "vendor";
-
-    if(!user){
-      user = await Employee.findOne({email: email});
-      role = "employee";
-    }
-
-    if (!user) {
+    const userResult = await authService.findUserByEmail(email);
+    if (!userResult) {
       return res.status(401).json({ error: 'Invalid email or password' });
     }
+
+    const { user, role } = userResult;
 
     const passwordMatch = await authService.comparePassword(password, user.password);
     if (!passwordMatch) {
@@ -87,21 +75,22 @@ async function login(req, res) {
     }
 
     const token = await authService.generateToken({
-      address: user.address,
-      role: role,
+      address: user.address || user.vendorAddr,
+      role,
     });
 
     res.cookie('authCookie', token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
+      sameSite: 'lax',
       maxAge: 3600000,
     });
 
     res.status(200).json({
       message: 'Login successful',
-      role: role,
-      address: user.address,
+      role,
+      address: user.address || user.vendorAddr,
+      token, // Add token to response
     });
   } catch (error) {
     console.error('Login error:', error);
@@ -114,8 +103,62 @@ async function logout(req, res) {
   res.status(200).json({ message: 'Logged out' });
 }
 
+async function checkAuth(req, res) {
+  try {
+    const token = req.cookies.authCookie;
+    console.log('Checking authCookie:', token ? 'Present' : 'Missing');
+    if (!token) {
+      return res.status(401).json({ isAuthenticated: false });
+    }
+
+    const decoded = await authService.verifyToken(token);
+    console.log('Token decoded:', decoded);
+    if (decoded) {
+      return res.status(200).json({ isAuthenticated: true });
+    }
+    return res.status(401).json({ isAuthenticated: false });
+  } catch (error) {
+    console.error('Check auth error:', error.message);
+    return res.status(401).json({ isAuthenticated: false });
+  }
+}
+
+async function getProfile(req, res) {
+  try {
+    const token = req.cookies.authCookie;
+    console.log('Fetching profile with authCookie:', token ? 'Present' : 'Missing');
+    if (!token) {
+      return res.status(401).json({ error: 'Not authenticated' });
+    }
+
+    const decoded = await authService.verifyToken(token);
+    console.log('Token decoded:', decoded);
+    if (!decoded) {
+      return res.status(401).json({ error: 'Invalid token' });
+    }
+
+    const userResult = await authService.findUserByAddress(decoded.address);
+    if (!userResult) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    const { user, role } = userResult;
+    res.status(200).json({
+      name: user.name,
+      email: user.email,
+      role,
+      address: user.address || user.vendorAddr,
+    });
+  } catch (error) {
+    console.error('Get profile error:', error.message);
+    res.status(500).json({ error: 'Failed to fetch profile' });
+  }
+}
+
 module.exports = {
   signup,
   login,
   logout,
+  checkAuth,
+  getProfile,
 };

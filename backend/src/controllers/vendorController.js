@@ -68,25 +68,31 @@ const getVendorProfileFromDB = async (req, res) => {
   }
 };
 
-const updateVendor = async (req, res) => {
+async function updateVendor(req, res) {
   try {
-    const updatedData = req.body;
+    const { vendorAddr } = req.params;
+    const { legalCertHash, certHashes } = req.body;
 
-    const updatedVendor = await Vendor.findOneAndUpdate(
-      { vendorAddr: req.user.address },
-      updatedData,
+    const updateData = {};
+    if (legalCertHash) updateData.legalCertHash = legalCertHash;
+    if (certHashes) updateData.certHashes = certHashes;
+
+    const vendor = await Vendor.findOneAndUpdate(
+      { vendorAddr },
+      { $set: updateData },
       { new: true }
     );
 
-    if (!updatedVendor) {
-      return res.status(404).send('Vendor not found');
+    if (!vendor) {
+      return res.status(404).json({ error: 'Vendor not found' });
     }
 
-    res.status(200).json(updatedVendor);
+    res.status(200).json({ message: 'Vendor certificates updated', vendor });
   } catch (error) {
-    res.status(500).send(error.message);
+    console.error('Update vendor error:', error);
+    res.status(500).json({ error: error.message });
   }
-};
+}
 
 const getAllVendors = async (req, res) => {
   try {

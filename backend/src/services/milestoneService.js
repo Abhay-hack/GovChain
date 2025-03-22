@@ -1,7 +1,7 @@
 // backend/src/services/milestoneService.js
 
 const Milestone = require('../models/milestoneModel');
-const Tender = require('../models/tenderModel'); // Assuming you have a Tender model
+const Tender = require('../models/tendor'); // Assuming you have a Tender model
 
 async function createMilestone(tenderId, milestoneName, description, dueDate, createdBy) {
   try {

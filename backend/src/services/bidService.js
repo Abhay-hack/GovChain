@@ -1,7 +1,7 @@
 // backend/src/services/bidService.js
 
 const Bid = require('../models/bidModel');
-const Tender = require('../models/tenderModel'); // Assuming you have a Tender model
+const Tender = require('../models/tendor'); // Assuming you have a Tender model
 const web3Service = require('./web3Service'); // Assuming you have web3Service for blockchain interactions
 
 async function createBid(tenderId, vendorAddr, amount, bidDetails) {

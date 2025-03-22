@@ -1,7 +1,7 @@
 // backend/src/services/disputeService.js
 
-const Dispute = require('../models/disputeModel');
-const Tender = require('../models/tenderModel'); // Assuming you have a Tender model
+// const Dispute = require('../models/disputeModel');
+const Tender = require('../models/tendor'); // Assuming you have a Tender model
 
 async function createDispute(tenderId, vendorAddr, disputeDescription, evidenceHashes, createdBy) {
   try {

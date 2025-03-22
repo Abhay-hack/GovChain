@@ -1,7 +1,7 @@
 // backend/src/services/ratingService.js
 
 const Rating = require('../models/ratingModel'); // Assuming you have a Rating model
-const Tender = require('../models/tenderModel'); // Assuming you have a Tender model
+const Tender = require('../models/tendor'); // Assuming you have a Tender model
 
 async function createRating(tenderId, vendorAddr, rating, comment, createdBy) {
   try {
@@ -96,6 +96,11 @@ async function calculateAverageRatingForVendor(vendorAddr) {
   }
 }
 
+const getVendorRatingForTender = async (tenderId, vendorAddr) => {
+  const rating = await Rating.findOne({ tenderId, vendorAddr });
+  return rating;
+};
+
 module.exports = {
   createRating,
   getRatingsForTender,
@@ -103,4 +108,5 @@ module.exports = {
   updateRating,
   deleteRating,
   calculateAverageRatingForVendor,
+  getVendorRatingForTender,
 }; 
