@@ -62,8 +62,30 @@ export const checkAuth = async () => {
 };
 
 export const getProfile = async () => {
-  const response = await api.get('/auth/profile');
-  return response.data;
+  try {
+    const response = await fetch(`${API_BASE_URL}/auth/profile`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include", // Include cookies if backend uses authentication
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP Error! Status: ${response.status}`);
+    }
+
+    return await response.json();  // ✅ Ensure it parses JSON
+  } catch (error) {
+    console.error("Error fetching profile:", error);
+    return null;  // Return null to avoid breaking UI
+  }
+};
+
+
+export const getTendersByEmployee = async (employeeAddress) => {
+  const response = await fetch(`/api/tenders?createdBy=${employeeAddress}`);
+  return response.json();
 };
 
 export default api;

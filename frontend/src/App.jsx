@@ -13,6 +13,7 @@ import Verify from './pages/Verify.jsx';
 import Signup from './pages/Signup';
 import Login from './pages/Login';
 import Profile from './pages/Profile';
+import CreateTender from './components/CreateTender';
 import { logout, checkAuth } from './utils/api';
 import './App.css';
 
@@ -106,6 +107,14 @@ function App() {
                   element={
                     <ProtectedRoute isAuthenticated={isAuthenticated}>
                       <Vendors />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/create-tender"
+                  element={
+                    <ProtectedRoute isAuthenticated={isAuthenticated}>
+                      <CreateTender />
                     </ProtectedRoute>
                   }
                 />
